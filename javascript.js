@@ -5,8 +5,8 @@
 */
 
 function Gameboard() {
-    const rows = 6;
-    const columns = 7;
+    const rows = 3;
+    const columns = 3;
     const board = [];
   
     // Create a 2d array that will represent the state of the game board
@@ -26,20 +26,19 @@ function Gameboard() {
   
     // In order to drop a token, we need to find what the lowest point of the
     // selected column is, *then* change that cell's value to the player number
-    const dropToken = (column, player) => {
+    const makeMove = (row, column, player) => {
       // Our board's outermost array represents the row,
       // so we need to loop through the rows, starting at row 0,
       // find all the rows that don't have a token, then take the
       // last one, which will represent the bottom-most empty cell
-      const availableCells = board.filter((row) => row[column].getValue() === 0).map(row => row[column]);
-  
+
       // If no cells make it through the filter, 
       // the move is invalid. Stop execution.
-      if (!availableCells.length) return;
+      if (board[row][column].getValue() !== 0) return;
   
       // Otherwise, I have a valid cell, the last one in the filtered array
-      const lowestRow = availableCells.length - 1;
-      board[lowestRow][column].addToken(player);
+      board[row][column].addToken(player);
+      console.log(board[row][column]);
     };
   
     // This method will be used to print our board to the console.
@@ -52,7 +51,7 @@ function Gameboard() {
   
     // Here, we provide an interface for the rest of our
     // application to interact with the board
-    return { getBoard, dropToken, printBoard };
+    return { getBoard, makeMove, printBoard };
   }
   
   /*
@@ -110,15 +109,15 @@ function Gameboard() {
   
     const printNewRound = () => {
       board.printBoard();
-      console.log(`${getActivePlayer().name}'s turn.`);
+      console.log(`${getActivePlayer().name}'s turn.`); //
     };
   
-    const playRound = (column) => {
+    const playRound = (row, column) => {
       // Drop a token for the current player
       console.log(
         `Dropping ${getActivePlayer().name}'s token into column ${column}...`
       );
-      board.dropToken(column, getActivePlayer().token);
+      board.makeMove(row, column, getActivePlayer().token);
   
       /*  This is where we would check for a winner and handle that logic,
           such as a win message. */
@@ -135,8 +134,64 @@ function Gameboard() {
     // getActivePlayer for the UI version, so I'm revealing it now
     return {
       playRound,
-      getActivePlayer
+      getActivePlayer,
+      getBoard: board.getBoard
     };
   }
   
-  const game = GameController();
+//   const game = GameController();
+
+function ScreenController() {
+    const game = GameController();
+    const playerTurnDiv = document.querySelector('.turn');
+    const boardDiv = document.querySelector('.board');
+  
+    const updateScreen = () => {
+      // clear the board
+      boardDiv.textContent = "";
+  
+      // get the newest version of the board and player turn
+      const board = game.getBoard(); //getBoard() belongs to the Gameboard() function, not GameController() function. However, 
+      //getBoard() was mutated from the Gameboard() in the GameController()'s return, so you can use this syntax OK.
+      //If it wasn't in the return, I don't think you can use it. If you wanted to use it, you need to create
+      //a new variable for Gameboard() like "const game1 = Gameboard();"
+      const activePlayer = game.getActivePlayer();
+  
+      // Display player's turn
+      playerTurnDiv.textContent = `${activePlayer.name}'s turn...`
+  
+      // Render board squares
+      board.forEach(row, rowIndex => {
+        row.forEach((cell, columnIndex) => {
+          // Anything clickable should be a button!!
+          const cellButton = document.createElement("button");
+          cellButton.classList.add("cell");
+          // Create a data attribute to identify the column
+          // This makes it easier to pass into our `playRound` function 
+          cellButton.dataset.row = rowIndex;
+          cellButton.dataset.column = columnIndex;
+          cellButton.textContent = cell.getValue();
+          boardDiv.appendChild(cellButton);
+        })
+      })
+    }
+  
+    // Add event listener for the board
+    function clickHandlerBoard(e) {
+      const selectedRow = e.target.dataset.row;
+      const selectedColumn = e.target.dataset.column;
+      // Make sure I've clicked a column and not the gaps in between
+      if (!selectedColumn) return;
+      
+      game.playRound(selectedRow, selectedColumn);
+      updateScreen();
+    }
+    boardDiv.addEventListener("click", clickHandlerBoard);
+  
+    // Initial render
+    updateScreen();
+  
+    // We don't need to return anything from this module because everything is encapsulated inside this screen controller.
+  }
+  
+  ScreenController();

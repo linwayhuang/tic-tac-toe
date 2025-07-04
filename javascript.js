@@ -161,8 +161,8 @@ function ScreenController() {
       playerTurnDiv.textContent = `${activePlayer.name}'s turn...`
   
       // Render board squares
-      board.forEach(row, rowIndex => {
-        row.forEach((cell, columnIndex) => {
+      board.forEach((row, rowIndex) => { //rowIndex represents the array index
+        row.forEach((cell, columnIndex) => { //columnIndex represents the array index
           // Anything clickable should be a button!!
           const cellButton = document.createElement("button");
           cellButton.classList.add("cell");

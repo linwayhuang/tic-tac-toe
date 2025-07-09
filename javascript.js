@@ -221,6 +221,7 @@ function ScreenController() {
   const boardDiv = document.querySelector('.board');
   const resetBtn = document.getElementById('resetBtn');
 
+  // This is a callback function to communicate between the logic and the DOM when a win or a draw happens
   const handleGameOver = (result, winnerName) => {
     if (result === "win") {
       playerTurnDiv.textContent = `${winnerName} wins!`;

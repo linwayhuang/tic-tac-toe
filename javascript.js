@@ -49,9 +49,18 @@ function Gameboard() {
     console.log(boardWithCellValues);
   };
 
+  // Reset the board with "empty" cells
+  const resetBoard = () => {
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0;j < columns; j++) {
+        board[i][j] = Cell();
+      }
+    }
+  }
+
   // Here, we provide an interface for the rest of our
   // application to interact with the board
-  return { getBoard, makeMove, printBoard };
+  return { getBoard, makeMove, printBoard, resetBoard };
 }
   
 /*
@@ -113,7 +122,8 @@ function checkWin(board, row, col, token) {
 */
 function GameController(
   playerOneName = "Player One",
-  playerTwoName = "Player Two"
+  playerTwoName = "Player Two",
+  onGameOver // this variable will notify the DOM when the game is over
 ) {
   const board = Gameboard();
 
@@ -128,6 +138,8 @@ function GameController(
     }
   ];
 
+  let gameOver = false; // This will track whether the game is over and prevent further moves
+
   let activePlayer = players[0];
 
   const switchPlayerTurn = () => {
@@ -140,10 +152,24 @@ function GameController(
     console.log(`${getActivePlayer().name}'s turn.`); //
   };
 
+  // Reset the "game state"
+  const resetGame = () => {
+    board.resetBoard(); //reset all cells
+    activePlayer = players[0]; //reset to player one
+    gameOver = false;
+    printNewRound(); //print empty board and whose turn it is
+  };
+
   const playRound = (row, column) => {
+    // Check if the game is done
+    if (gameOver) {
+      console.log("Game is already over. Reset to play again.");
+      return;
+    }
+
     // Check if the cell is already filled
     if (board.getBoard()[row][column].getValue() !== 0) {
-      alert("That spot is already taken!");
+      console.log("That spot is already taken!");
       return;
     }
 
@@ -157,13 +183,17 @@ function GameController(
     // You should place methods (board.getBoard() and getActivePlayer()) in here b/c it will use the current
     // game state, so it can correctly check the tokens next to the ones just dropped.
     if (checkWin(board.getBoard(), row, column, getActivePlayer().token)) { 
-      alert(`🎉 Player ${activePlayer === players[0] ? players[1] : players[0]} wins!`);
+      console.log(`🎉 ${getActivePlayer().name} wins!`);
+      gameOver = true;
+      onGameOver?.('win', getActivePlayer().name); // notify UI, onGameOver?() means "call onGameOver() if it exist".
       return;
     }
 
     // Same reason above for board.getBoard()
     if (board.getBoard().flat().every(cell => cell.getValue() !== 0)) {
-      alert("It's a draw!");
+      console.log("It's a draw!");
+      gameOver = true;
+      onGameOver?.('draw'); // notify UI, onGameOver?() means "call onGameOver() if it exist".
       return;
     }
         
@@ -181,16 +211,28 @@ function GameController(
   return {
     playRound,
     getActivePlayer,
-    getBoard: board.getBoard
+    getBoard: board.getBoard,
+    resetGame,
   };
 }
 
-//   const game = GameController();
-
 function ScreenController() {
-  const game = GameController();
   const playerTurnDiv = document.querySelector('.turn');
   const boardDiv = document.querySelector('.board');
+  const resetBtn = document.getElementById('resetBtn');
+
+  const handleGameOver = (result, winnerName) => {
+    if (result === "win") {
+      playerTurnDiv.textContent = `${winnerName} wins!`;
+    } else if (result = "draw") {
+      playerTurnDiv.textContent = `It's a draw!`;
+    }
+
+    resetBtn.style.display = "inline-block";
+    disableBoard();
+  };
+  
+  const game = GameController("Player 1", "Player 2", handleGameOver);
 
   const updateScreen = () => {
     // clear the board
@@ -239,6 +281,18 @@ function ScreenController() {
     updateScreen();
   }
   // boardDiv.addEventListener("click", clickHandlerBoard); (delete b/c I added event listener to the cell button)
+  function disableBoard() {
+    const cells = document.querySelectorAll('.cell');
+    cells.forEach(cell => cell.disabled = true);
+  }
+
+  // Add resetBtn listener
+  resetBtn.addEventListener("click", () => {
+    game.resetGame();
+    updateScreen();
+    resetBtn.style.display = 'none';
+  });
+
   // Initial render
   updateScreen();
 

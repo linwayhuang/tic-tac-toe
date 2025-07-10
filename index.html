@@ -9,9 +9,33 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="turn"></div>
-        <div class="board"></div>
-        <button id="resetBtn" style="display: none;">Restart Game</button>
+        <div class="header">
+            <div class="name">
+                <p>Tic Tac Toe Game</p>
+            </div>
+            <div class="turn"></div>
+        </div>
+        <div class="main">
+            <button id="resetBtn" style="display: none;">Restart Game</button>
+            <div class="board"></div>
+            <div class="scoreBoard">
+                <div id="player1Score">
+                    <p class="name">PLAYER 1</p>
+                    <p id="scoreOne">0</p>
+                </div>
+                <div id="draws">
+                    <p class="name">DRAWS</p>
+                    <p id="scoreDraws">0</p>
+                </div>
+                <div id="player2Score">
+                    <p class="name">PLAYER 2</p>
+                    <p id="scoreTwo">0</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="copyright">Made by Me</div>
+        </div>
     </div>
 </body>
 </html>

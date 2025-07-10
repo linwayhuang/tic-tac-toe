@@ -166,7 +166,14 @@ function GameController(
     if (checkWin(board.getBoard(), row, column, getActivePlayer().token)) { 
       console.log(`🎉 ${getActivePlayer().name} wins!`);
       gameOver = true;
-      onGameOver?.('win', getActivePlayer().name); // notify UI, onGameOver?() means "call onGameOver() if it exist".
+
+      if (activePlayer === players[0]) {
+        scores.player1++;
+      } else {
+        scores.player2++;
+      }
+
+      onGameOver?.('win', getActivePlayer().name, scores); // notify UI, onGameOver?() means "call onGameOver() if it exist".
       return;
     }
 
@@ -174,7 +181,8 @@ function GameController(
     if (board.getBoard().flat().every(cell => cell.getValue() !== "-")) {
       console.log("It's a draw!");
       gameOver = true;
-      onGameOver?.('draw'); // notify UI, onGameOver?() means "call onGameOver() if it exist".
+      scores.draws++;
+      onGameOver?.('draw', null, scores); // notify UI, onGameOver?() means "call onGameOver() if it exist".
       return;
     } 
 
@@ -193,6 +201,7 @@ function GameController(
     getActivePlayer,
     getBoard: board.getBoard,
     resetGame,
+    getScore: () => scores // expose scores for reading
   };
 }
 
@@ -200,14 +209,22 @@ function ScreenController() {
   const playerTurnDiv = document.querySelector('.turn');
   const boardDiv = document.querySelector('.board');
   const resetBtn = document.getElementById('resetBtn');
+  const player1ScoreP = document.getElementById('scoreOne');
+  const player2ScoreP = document.getElementById('scoreTwo');
+  const drawsP = document.getElementById('scoreDraws');
 
   // This is a callback function to communicate between the logic and the DOM when a win or a draw happens
-  const handleGameOver = (result, winnerName) => {
+  const handleGameOver = (result, winnerName, scores) => {
     if (result === "win") {
       playerTurnDiv.textContent = `${winnerName} wins!`;
     } else if (result = "draw") {
       playerTurnDiv.textContent = `It's a draw!`;
     }
+
+    // Update score UI
+    player1ScoreP.textContent = `${scores.player1}`;
+    drawsP.textContent = `${scores.draws}`;
+    player2ScoreP.textContent = `${scores.player2}`;
 
     resetBtn.style.display = "inline-block";
     disableBoard();

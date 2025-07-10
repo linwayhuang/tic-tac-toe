@@ -34,7 +34,7 @@ function Gameboard() {
 
     // If no cells make it through the filter, 
     // the move is invalid. Stop execution.
-    if (board[row][column].getValue() !== 0) return;
+    if (board[row][column].getValue() !== "-") return;
 
     // Otherwise, I have a valid cell, the last one in the filtered array
     board[row][column].addToken(player);
@@ -71,7 +71,7 @@ function Gameboard() {
 */
 
 function Cell() {
-  let value = 0;
+  let value = "-";
 
   // Accept a player's token to change the value of the cell
   const addToken = (player) => {
@@ -138,6 +138,12 @@ function GameController(
     }
   ];
 
+  const scores = {
+    player1: 0,
+    player2: 0,
+    draws: 0,
+  };
+
   let gameOver = false; // This will track whether the game is over and prevent further moves
 
   let activePlayer = players[0];
@@ -168,7 +174,7 @@ function GameController(
     }
 
     // Check if the cell is already filled
-    if (board.getBoard()[row][column].getValue() !== 0) {
+    if (board.getBoard()[row][column].getValue() !== "-") {
       console.log("That spot is already taken!");
       return;
     }
@@ -185,12 +191,15 @@ function GameController(
     if (checkWin(board.getBoard(), row, column, getActivePlayer().token)) { 
       console.log(`🎉 ${getActivePlayer().name} wins!`);
       gameOver = true;
+
+
+
       onGameOver?.('win', getActivePlayer().name); // notify UI, onGameOver?() means "call onGameOver() if it exist".
       return;
     }
 
     // Same reason above for board.getBoard()
-    if (board.getBoard().flat().every(cell => cell.getValue() !== 0)) {
+    if (board.getBoard().flat().every(cell => cell.getValue() !== "-")) {
       console.log("It's a draw!");
       gameOver = true;
       onGameOver?.('draw'); // notify UI, onGameOver?() means "call onGameOver() if it exist".

@@ -1,9 +1,3 @@
-/*
-** The Gameboard represents the state of the board
-** Each equare holds a Cell (defined later)
-** and we expose a dropToken method to be able to add Cells to squares
-*/
-
 function Gameboard() {
   const rows = 3;
   const columns = 3;
@@ -24,19 +18,7 @@ function Gameboard() {
   // UI will eventually need to render it.
   const getBoard = () => board;
 
-  // In order to drop a token, we need to find what the lowest point of the
-  // selected column is, *then* change that cell's value to the player number
   const makeMove = (row, column, player) => {
-    // Our board's outermost array represents the row,
-    // so we need to loop through the rows, starting at row 0,
-    // find all the rows that don't have a token, then take the
-    // last one, which will represent the bottom-most empty cell
-
-    // If no cells make it through the filter, 
-    // the move is invalid. Stop execution.
-    if (board[row][column].getValue() !== "-") return;
-
-    // Otherwise, I have a valid cell, the last one in the filtered array
     board[row][column].addToken(player);
     console.log(board[row][column]);
   };
@@ -62,13 +44,6 @@ function Gameboard() {
   // application to interact with the board
   return { getBoard, makeMove, printBoard, resetBoard };
 }
-  
-/*
-** A Cell represents one "square" on the board and can have one of
-** 0: no token is in the square,
-** 1: Player One's token,
-** 2: Player 2's token
-*/
 
 function Cell() {
   let value = "-";
@@ -191,9 +166,6 @@ function GameController(
     if (checkWin(board.getBoard(), row, column, getActivePlayer().token)) { 
       console.log(`🎉 ${getActivePlayer().name} wins!`);
       gameOver = true;
-
-
-
       onGameOver?.('win', getActivePlayer().name); // notify UI, onGameOver?() means "call onGameOver() if it exist".
       return;
     }
@@ -204,8 +176,7 @@ function GameController(
       gameOver = true;
       onGameOver?.('draw'); // notify UI, onGameOver?() means "call onGameOver() if it exist".
       return;
-    }
-        
+    } 
 
     // Switch player turn
     switchPlayerTurn();

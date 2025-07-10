@@ -63,22 +63,26 @@ function Cell() {
 }
 
 function checkDirection(board, row, col, rowDir, colDir, token) {
-  let count = 1;
+  let winningCells = [[row, col]];
 
   for (let i = 1; i < 3; i++) {
     const r = row + rowDir * i;
     const c = col + colDir * i;
-    if (r < 0 || r >= board.length || c < 0 || c >= board[0].length || board[r][c].getValue() !== token) break;
-    count++;
+    if (r < 0 || r >= board.length || c < 0 || c >= board[0].length) break;
+    if (board[r][c].getValue() === token) {
+      winningCells.push([r, c]);
+    } else break;
   }
 
   for (let i = 1; i < 3; i++) {
     const r = row - rowDir * i;
     const c = col - colDir * i;
-    if (r < 0 || r >= board.length || c < 0 || c >= board[0].length || board[r][c].getValue() !== token) break;
-    count++;
+    if (r < 0 || r >= board.length || c < 0 || c >= board[0].length) break;
+    if (board[r][c].getValue() === token) {
+      winningCells.push([r, c]);
+    } else break;
   }
-  return count >= 3;
+  return winningCells.length >= 3 ? winningCells : null;
 }
 
 function checkWin(board, row, col, token) {
@@ -163,7 +167,8 @@ function GameController(
 
     // You should place methods (board.getBoard() and getActivePlayer()) in here b/c it will use the current
     // game state, so it can correctly check the tokens next to the ones just dropped.
-    if (checkWin(board.getBoard(), row, column, getActivePlayer().token)) { 
+    const result = checkWin(board.getBoard(), row, column, getActivePlayer().token);
+    if (result) { 
       console.log(`🎉 ${getActivePlayer().name} wins!`);
       gameOver = true;
 
@@ -173,7 +178,7 @@ function GameController(
         scores.player2++;
       }
 
-      onGameOver?.('win', getActivePlayer().name, scores); // notify UI, onGameOver?() means "call onGameOver() if it exist".
+      onGameOver?.('win', getActivePlayer().name, scores, result); // notify UI, onGameOver?() means "call onGameOver() if it exist". Also, pass scores and the winning cells
       return;
     }
 
@@ -213,13 +218,16 @@ function ScreenController() {
   const player1ScoreP = document.getElementById('scoreOne');
   const player2ScoreP = document.getElementById('scoreTwo');
   const drawsP = document.getElementById('scoreDraws');
+  let winningCells = []; //to store winning cells coordinates
 
   // This is a callback function to communicate between the logic and the DOM when a win or a draw happens
-  const handleGameOver = (result, winnerName, scores) => {
+  const handleGameOver = (result, winnerName, scores, winCoords) => {
     if (result === "win") {
-      playerTurnDiv.textContent = `${winnerName} wins!`;
+      playerTurnDiv.textContent = `${winnerName} wins! 🎉`;
+      winningCells = winCoords;
     } else if (result = "draw") {
       playerTurnDiv.textContent = `It's a draw!`;
+      winningCells = [];
     }
 
     // Update score UI
@@ -259,7 +267,14 @@ function ScreenController() {
         // This makes it easier to pass into our `playRound` function 
         cellButton.dataset.row = rowIndex;
         cellButton.dataset.column = columnIndex;
-        cellButton.textContent = cell.getValue();
+        const value = cell.getValue();
+        cellButton.textContent = value === "-" ? "" : value;
+        
+        // Check if this cell is a winning cell
+        if (winningCells.some(([r, c]) => r === rowIndex && c === columnIndex)) {
+          cellButton.classList.add("highlight");
+        }
+
         boardDiv.appendChild(cellButton);
       })
     })

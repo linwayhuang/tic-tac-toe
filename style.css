@@ -144,7 +144,7 @@ h1, h2, h3, h4, h5, h6 {
   align-content: center;
   background-color: #34c3be;
   border-radius: 10px;
-  width: 120px;
+  width: 250px;
   font-weight: 250;
   font-size: 0.8rem;
 }
@@ -184,6 +184,10 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 5px 5px 8px black;
   background: #1e3640;
   cursor: pointer;
+}
+
+.cell.highlight {
+  background-color: #516c78;
 }
 
 .footer {

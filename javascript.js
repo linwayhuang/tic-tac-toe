@@ -236,7 +236,6 @@ function ScreenController() {
     player2ScoreP.textContent = `${scores.player2}`;
 
     resetBtn.style.display = "inline-block";
-    disableBoard();
   };
   
   const game = GameController("Player 1", "Player 2", handleGameOver);
@@ -295,11 +294,6 @@ function ScreenController() {
     
     game.playRound(selectedRow, selectedColumn);
     updateScreen();
-  }
-  // boardDiv.addEventListener("click", clickHandlerBoard); (delete b/c I added event listener to the cell button)
-  function disableBoard() {
-    const cells = document.querySelectorAll('.cell');
-    cells.forEach(cell => cell.disabled = true);
   }
 
   // Add resetBtn listener

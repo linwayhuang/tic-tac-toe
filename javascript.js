@@ -201,6 +201,7 @@ function GameController(
     getActivePlayer,
     getBoard: board.getBoard,
     resetGame,
+    isGameOver: () => gameOver, //expose game over state
     getScore: () => scores // expose scores for reading
   };
 }
@@ -243,8 +244,10 @@ function ScreenController() {
     //a new variable for Gameboard() like "const game1 = Gameboard();"
     const activePlayer = game.getActivePlayer();
 
-    // Display player's turn
-    playerTurnDiv.textContent = `${activePlayer.name}'s turn...`
+    // Only display player's turn if the game is not over
+    if (!game.isGameOver()) {
+      playerTurnDiv.textContent = `${activePlayer.name}'s turn...`
+    };
 
     // Render board squares
     board.forEach((row, rowIndex) => { //rowIndex represents the array index

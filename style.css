@@ -20,6 +20,8 @@ body {
   line-height: 1.5;
   /* 5. Improve text rendering */
   -webkit-font-smoothing: antialiased;
+  background-color: #1A2B33;
+  font-family: "Outfit", sans-serif;
 }
 
 /* 6. Improve media defaults */
@@ -53,16 +55,69 @@ h1, h2, h3, h4, h5, h6 {
   isolation: isolate;
 }
 
+@font-face {
+  font-family: "Outfit";
+  src: url("./outfit.ttf");
+}
+
+.container {
+  padding: 20px;
+  height: 100vh; /* 100% of viewport's height */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 50px;
+}
+
+.header {
+  width: 100vw; /* 100% of viewport's width */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.name {
+  grid-column: 1/2;
+}
+
+.turn {
+  grid-column: 2/3;
+  display: flex;
+  justify-content: center;
+  padding: 10px 25px;
+  background-color: #1e3640;
+  box-shadow: 5px 5px 8px black;
+  font-size: 2rem;
+  font-weight: bold;
+  color: grey;
+  border-radius: 8px;
+}
+
+.main {
+  display: grid;
+  grid-template-rows: 1fr 8fr; /* This will keep the board in place so it won't be pushed down
+  when the reset button shows up */
+  gap: 30px;
+}
+
+#resetBtn {
+  grid-row: 1/2;
+  justify-self: center;
+  width: 200px;
+  height: 30px;
+  cursor: pointer;
+}
+
 .board {
+  grid-row: 2;
   display: grid;
   height: 500px;
   width: 500px;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  border: 1px solid black;
-  gap: 2px;
+  /* border: 1px solid black; */
+  gap: 50px;
   padding: 2px;
-  background-color: yellow;
   }
   
 .cell {
@@ -71,7 +126,9 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   text-align: center;
   font-size: 2rem;
-  border: 1px solid grey;
-  background: lightyellow;
+  border: 2px solid rgb(98, 96, 96);
+  border-radius: 8px;
+  box-shadow: 5px 5px 8px black;
+  background: #1e3640;
   cursor: pointer;
 }

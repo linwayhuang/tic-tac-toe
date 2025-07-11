@@ -219,15 +219,21 @@ function ScreenController() {
   const player2ScoreP = document.getElementById('scoreTwo');
   const drawsP = document.getElementById('scoreDraws');
   let winningCells = []; //to store winning cells coordinates
+  const clickSound = document.getElementById('clickSound');
+  const winSound = document.getElementById('winSound');
+  const drawSound = document.getElementById('drawSound');
 
   // This is a callback function to communicate between the logic and the DOM when a win or a draw happens
   const handleGameOver = (result, winnerName, scores, winCoords) => {
     if (result === "win") {
       playerTurnDiv.textContent = `${winnerName} wins! 🎉`;
       winningCells = winCoords;
+      winSound.currentTime = 0;
+      winSound.play();
     } else if (result = "draw") {
       playerTurnDiv.textContent = `It's a draw!`;
       winningCells = [];
+      drawSound.play();
     }
 
     // Update score UI
@@ -290,14 +296,22 @@ function ScreenController() {
 
   // Add event listener for the board
   function clickHandlerBoard(e) {
+    playClickSound();
     const selectedRow = parseInt(e.target.dataset.row); //the value from the data attribute is string, so we need to convert it to number to work with
     const selectedColumn = parseInt(e.target.dataset.column); //the value from the data attribute is string, so we need to convert it to number to work with
     game.playRound(selectedRow, selectedColumn);
     updateScreen();
   }
 
+  // Play click sound
+  function playClickSound() {
+    clickSound.currentTime = 0; // rewind to start
+    clickSound.play();
+  }
+
   // Add resetBtn listener
   resetBtn.addEventListener("click", () => {
+    playClickSound();
     game.resetGame();
     winningCells = [];
     updateScreen();

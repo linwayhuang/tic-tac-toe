@@ -272,6 +272,9 @@ function ScreenController() {
         // Check if this cell is a winning cell
         if (winningCells.some(([r, c]) => r === rowIndex && c === columnIndex)) {
           cellButton.classList.add("highlight");
+
+          // Stagger the animation
+          cellButton.style.animationDelay = `${(columnIndex + rowIndex) * 50}ms`;
         }
 
         boardDiv.appendChild(cellButton);
@@ -289,9 +292,6 @@ function ScreenController() {
   function clickHandlerBoard(e) {
     const selectedRow = parseInt(e.target.dataset.row); //the value from the data attribute is string, so we need to convert it to number to work with
     const selectedColumn = parseInt(e.target.dataset.column); //the value from the data attribute is string, so we need to convert it to number to work with
-    // Make sure I've clicked a column and not the gaps in between
-    // if (!selectedColumn) return; (delete b/c I added event listener to the cell button)
-    
     game.playRound(selectedRow, selectedColumn);
     updateScreen();
   }
@@ -299,6 +299,7 @@ function ScreenController() {
   // Add resetBtn listener
   resetBtn.addEventListener("click", () => {
     game.resetGame();
+    winningCells = [];
     updateScreen();
     resetBtn.style.display = 'none';
   });

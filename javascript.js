@@ -212,16 +212,45 @@ function GameController(
 }
 
 function ScreenController() {
+  const startScreen = document.getElementById("start-screen");
+  const startForm = document.getElementById("start-form");
+  const gameScreen = document.getElementById("game-screen");
+  const startBtn = document.getElementById("start-btn");
+  const p1Input = document.getElementById("player1-name");
+  const p2Input = document.getElementById("player2-name");
+
+  let game;
+  let player1, player2; // declare outside so other functions can use
+  let winningCells = []; //to store winning cells coordinates
+
   const playerTurnDiv = document.querySelector('.turn');
   const boardDiv = document.querySelector('.board');
   const resetBtn = document.getElementById('resetBtn');
   const player1ScoreP = document.getElementById('scoreOne');
   const player2ScoreP = document.getElementById('scoreTwo');
   const drawsP = document.getElementById('scoreDraws');
-  let winningCells = []; //to store winning cells coordinates
   const clickSound = document.getElementById('clickSound');
   const winSound = document.getElementById('winSound');
   const drawSound = document.getElementById('drawSound');
+
+  playerTurnDiv.textContent = "Enter Player Names";
+
+  startForm.addEventListener("submit", (e) => {
+    e.preventDefault(); // stop the form from refreshing the page
+
+    player1 = p1Input.value.trim() || "Player 1";
+    player2 = p2Input.value.trim() || "Player 2";
+
+    if (!player1 || !player2) return;
+
+    startScreen.style.display = "none";
+    gameScreen.removeAttribute("style");
+
+    game = GameController(player1, player2, handleGameOver);
+
+    // Initial render
+    updateScreen();
+  });
 
   // This is a callback function to communicate between the logic and the DOM when a win or a draw happens
   const handleGameOver = (result, winnerName, scores, winCoords) => {
@@ -241,10 +270,12 @@ function ScreenController() {
     drawsP.textContent = `${scores.draws}`;
     player2ScoreP.textContent = `${scores.player2}`;
 
+    // Add fade-out animation to board
+    boardDiv.classList.add("fade-out");
+
     resetBtn.style.display = "inline-block";
   };
   
-  const game = GameController("Player 1", "Player 2", handleGameOver);
 
   const updateScreen = () => {
     // clear the board
@@ -314,12 +345,10 @@ function ScreenController() {
     playClickSound();
     game.resetGame();
     winningCells = [];
+    boardDiv.classList.remove("fade-out");
     updateScreen();
     resetBtn.style.display = 'none';
   });
-
-  // Initial render
-  updateScreen();
 
   // We don't need to return anything from this module because everything is encapsulated inside this screen controller.
 }

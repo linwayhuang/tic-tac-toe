@@ -104,7 +104,55 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 8px;
 }
 
-.main {
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+
+/* Center the start screen */
+#start-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  animation: fadeIn 0.5s ease;
+}
+
+#start-form input {
+  padding: 0.6rem 1rem;
+  width: 250px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+#start-form input:focus {
+  border-color: #007acc;
+}
+
+#start-form button {
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  color: white;
+  background-color: #0d67a4;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#start-form button:hover {
+  background-color: #005fa3;
+}
+
+
+#game-screen {
   display: grid;
   grid-template-rows: 1fr 8fr 1.5fr; /* This will keep the board in place so it won't be pushed down
   when the reset button shows up */
@@ -132,9 +180,21 @@ h1, h2, h3, h4, h5, h6 {
   padding: 2px;
   }
 
+@keyframes fadeOutBoard {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.3;
+  }
+}
+
+.board.fade-out {
+  animation: fadeOutBoard 0.5s ease forwards;
+}
+
 .scoreBoard {
   grid-row: 3;
-
   display: flex;
   justify-content: space-between;
   gap: 20px;
